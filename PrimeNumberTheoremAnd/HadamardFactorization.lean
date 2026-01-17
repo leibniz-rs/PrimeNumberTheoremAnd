@@ -1,3 +1,9 @@
+/-
+Copyright (c) 2026 Jonathan Washburn, Matteo Cipollina. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors : Jonathan Washburn, Matteo Cipollina
+-/
+
 import Architect
 import PrimeNumberTheoremAnd.Mathlib.Analysis.Complex.Hadamard
 import PrimeNumberTheoremAnd.Mathlib.Analysis.Complex.RiemannZetaHadamard
