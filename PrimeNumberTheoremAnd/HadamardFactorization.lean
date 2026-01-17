@@ -14,11 +14,12 @@ blueprint_comment /--
 In this file, we expose blueprint-facing entry points for Hadamard factorization in the style of
 Tao’s notes (246B, Theorem 22 in `PrimeNumberTheoremAnd/hadamard.md`).
 
-Important: Tao formulates “order at most `ρ`” using an \(ε\)-family of bounds
-\(|f(z)| \le C_ε \exp(|z|^{ρ+ε})\). Our core theorem in this repository assumes a *single explicit*
-growth inequality of the form
-`Real.log (1 + ‖f z‖) ≤ C * (1 + ‖z‖) ^ ρ`,
-which implies such a finite-order bound but is a strictly stronger hypothesis than the \(ε\)-form.
+Tao formulates “order at most `ρ`” using an \(ε\)-family of bounds of the shape
+\(|f(z)| \le C_ε \exp(|z|^{ρ+ε})\).  In this repository we prove a matching `ε`-family version
+(`Complex.Hadamard.hadamard_factorization_of_order`), stated with the standard harmless
+normalization `(1 + ‖z‖)` in place of `|z|`, and proved by reducing to the core growth-based theorem
+`Complex.Hadamard.hadamard_factorization_of_growth` (which assumes a single explicit bound on
+`Real.log (1 + ‖f z‖)`).
 
 -/
 
