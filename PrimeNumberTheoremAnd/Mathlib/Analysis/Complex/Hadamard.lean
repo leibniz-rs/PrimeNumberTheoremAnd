@@ -2767,6 +2767,92 @@ theorem hadamard_factorization_of_growth {f : ℂ → ℂ} {ρ : ℝ} (hρ : 0 �
     have hH' : H z = Complex.exp (Polynomial.eval z P) := by simpa using (hHP z)
     simpa [hH', mul_assoc, mul_left_comm, mul_comm, m] using (hfactor z)
 
+/-!
+## Finite order hypothesis ⇒ Hadamard factorization
+
+Tao (246B, Theorem 22) assumes an “order at most `ρ`” hypothesis given by an `ε`-family of growth
+bounds. Our proof pipeline is phrased in terms of a single explicit bound on `log (1 + ‖f z‖)`.
+
+The theorem below bridges this gap: from the `ε`-family of exponential bounds we pick an
+intermediate exponent `τ` with `ρ < τ < ⌊ρ⌋ + 1` and obtain the single growth hypothesis needed to
+apply `hadamard_factorization_of_growth`. The conclusion matches Tao’s form, with the canonical
+product indexed intrinsically by the divisor rather than by a chosen enumeration of zeros.
+-/
+
+theorem hadamard_factorization_of_order {f : ℂ → ℂ} {ρ : ℝ} (hρ : 0 ≤ ρ)
+    (hentire : Differentiable ℂ f)
+    (hnot : ∃ z : ℂ, f z ≠ 0)
+    (horder :
+      ∀ ε : ℝ, 0 < ε →
+        ∃ C > 0, ∀ z : ℂ, ‖f z‖ ≤ Real.exp (C * (1 + ‖z‖) ^ (ρ + ε))) :
+    ∃ (P : Polynomial ℂ),
+      P.degree ≤ Nat.floor ρ ∧
+      ∀ z : ℂ,
+        f z =
+          Complex.exp (Polynomial.eval z P) *
+            z ^ (analyticOrderNatAt f 0) *
+            divisorCanonicalProduct (Nat.floor ρ) f (Set.univ : Set ℂ) z := by
+  classical
+  set m : ℕ := Nat.floor ρ
+  -- Choose an intermediate exponent `τ` with `ρ < τ < m+1`, so `Nat.floor τ = m`.
+  let τ : ℝ := (ρ + (m + 1 : ℝ)) / 2
+  have hτ : ρ < τ := by
+    have hm : ρ < (m + 1 : ℝ) := by
+      simpa [m] using (Nat.lt_floor_add_one (a := ρ))
+    dsimp [τ]
+    linarith
+  have hτ_lt : τ < (m + 1 : ℝ) := by
+    have hm : ρ < (m + 1 : ℝ) := by
+      simpa [m] using (Nat.lt_floor_add_one (a := ρ))
+    dsimp [τ]
+    linarith
+  have hτ_nonneg : 0 ≤ τ := le_trans hρ (le_of_lt hτ)
+  have hfloorτ : Nat.floor τ = m := by
+    have hm_le_ρ : (m : ℝ) ≤ ρ := by
+      have := Nat.floor_le hρ
+      simpa [m] using this
+    have hm_le_τ : (m : ℝ) ≤ τ := le_trans hm_le_ρ (le_of_lt hτ)
+    have hτ_lt_m1 : τ < (m : ℝ) + 1 := by
+      simpa [add_assoc, add_comm, add_left_comm] using hτ_lt
+    exact (Nat.floor_eq_iff hτ_nonneg).2 ⟨hm_le_τ, hτ_lt_m1⟩
+
+  -- Obtain a single growth bound at exponent `τ` from the `ε`-family.
+  have hε : 0 < τ - ρ := sub_pos.2 hτ
+  rcases horder (τ - ρ) hε with ⟨C, hCpos, hC⟩
+  have hgrowthτ :
+      ∃ C' > 0, ∀ z : ℂ, Real.log (1 + ‖f z‖) ≤ C' * (1 + ‖z‖) ^ τ := by
+    refine ⟨C + Real.log 2, by
+      have hlog2 : 0 ≤ Real.log 2 := Real.log_nonneg (by norm_num)
+      linarith, ?_⟩
+    intro z
+    have hbase : (1 : ℝ) ≤ 1 + ‖z‖ := by linarith [norm_nonneg z]
+    have hX : (1 : ℝ) ≤ (1 + ‖z‖) ^ τ := Real.one_le_rpow hbase hτ_nonneg
+    have hB : 0 ≤ C * (1 + ‖z‖) ^ τ := by
+      exact mul_nonneg (le_of_lt hCpos) (by positivity)
+    have hnorm_le : ‖f z‖ ≤ Real.exp (C * (1 + ‖z‖) ^ τ) := by
+      -- rewrite the exponent `ρ + (τ - ρ)` to `τ`
+      simpa [sub_add_cancel] using (hC z)
+    have hlog_le :
+        Real.log (1 + ‖f z‖) ≤ C * (1 + ‖z‖) ^ τ + Real.log 2 := by
+      have : Real.log (1 + ‖f z‖) ≤ Real.log (1 + Real.exp (C * (1 + ‖z‖) ^ τ)) := by
+        have hpos : 0 < (1 : ℝ) + ‖f z‖ := by linarith [norm_nonneg (f z)]
+        have hle : (1 : ℝ) + ‖f z‖ ≤ (1 : ℝ) + Real.exp (C * (1 + ‖z‖) ^ τ) := by
+          linarith [hnorm_le]
+        exact Real.log_le_log hpos hle
+      exact this.trans (log_one_add_exp_le (B := C * (1 + ‖z‖) ^ τ) hB)
+    have hlog2_nonneg : 0 ≤ Real.log 2 := Real.log_nonneg (by norm_num)
+    have hlog2 : Real.log 2 ≤ Real.log 2 * (1 + ‖z‖) ^ τ := by
+      simpa [one_mul] using (mul_le_mul_of_nonneg_left hX hlog2_nonneg)
+    nlinarith [hlog_le, hlog2]
+
+  -- Apply the growth-based theorem at exponent `τ`, then rewrite floors.
+  rcases (hadamard_factorization_of_growth (f := f) (ρ := τ) hτ_nonneg hentire hnot hgrowthτ) with
+    ⟨P, hdeg, hfac⟩
+  refine ⟨P, ?_, ?_⟩
+  · simpa [m, hfloorτ] using hdeg
+  · intro z
+    simpa [m, hfloorτ] using hfac z
+
 end Complex.Hadamard
 
 #lint
