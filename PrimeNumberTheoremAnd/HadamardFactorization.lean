@@ -11,8 +11,14 @@ import PrimeNumberTheoremAnd.Mathlib.Analysis.Complex.ZetaFiniteOrder
 
 blueprint_comment /--
 
-In this file, we prove the Hadamard Factorization theorem for functions of finite order,
-and prove that the zeta function is such.
+In this file, we expose blueprint-facing entry points for Hadamard factorization in the style of
+Tao’s notes (246B, Theorem 22 in `PrimeNumberTheoremAnd/hadamard.md`).
+
+Important: Tao formulates “order at most `ρ`” using an \(ε\)-family of bounds
+\(|f(z)| \le C_ε \exp(|z|^{ρ+ε})\). Our core theorem in this repository assumes a *single explicit*
+growth inequality of the form
+`Real.log (1 + ‖f z‖) ≤ C * (1 + ‖z‖) ^ ρ`,
+which implies such a finite-order bound but is a strictly stronger hypothesis than the \(ε\)-form.
 
 -/
 
@@ -25,8 +31,9 @@ namespace PrimeNumberTheoremAnd
 /-!
 We provide blueprint-facing entry points for the intrinsic Hadamard factorization theorem.
 
-The **general** theorem is `Complex.Hadamard.hadamard_factorization_of_growth`, which factors an
-entire function assuming only a polynomial-type growth bound on `log(1+‖f z‖)`.
+The **general** theorem is `Complex.Hadamard.hadamard_factorization_of_order`, which factors an
+entire function under Tao’s “finite order” hypothesis formulated as an `ε`-family of growth bounds
+(246B, Theorem 22).
 
 The **zeta** corollary is `Riemann.completedRiemannZeta₀_hadamard_factorization_intrinsic`,
 obtained by combining the general theorem with the growth estimate proved in
@@ -34,18 +41,25 @@ obtained by combining the general theorem with the growth estimate proved in
 -/
 
 @[blueprint
-  "hadamard_factorization_of_growth"
-  (title := "Hadamard factorization (intrinsic, from growth)")
+  "hadamard_factorization_of_order"
+  (title := "Hadamard factorization (intrinsic, Tao-style finite order)")
   (statement := /--
-    Let `f : ℂ → ℂ` be entire and not identically zero. If `log (1 + ‖f z‖)` is bounded above by
-    `C * (1 + ‖z‖)^ρ`, then `f` admits a Hadamard factorization in terms of an exponential of a
-    polynomial and the canonical product indexed by the divisor of `f`.
+    Let `f : ℂ → ℂ` be entire and not identically zero, and assume a global growth bound
+    of Tao’s “order at most `ρ`” form: for every `ε > 0` there is `Cε > 0` such that
+    `‖f z‖ ≤ exp (Cε * (1 + ‖z‖) ^ (ρ + ε))`.
+
+    Then `f` admits a Hadamard factorization
+    \( f(z) = \exp(P(z)) \, z^{m} \, \prod E_d(z/a)\),
+    with `d = ⌊ρ⌋`, `deg P ≤ d`, and where the canonical product is indexed intrinsically by the
+    divisor (zeros with multiplicity), rather than by choosing an external enumeration of zeros.
   --/)
   (latexEnv := "theorem")]
-theorem hadamard_factorization_of_growth {f : ℂ → ℂ} {ρ : ℝ} (hρ : 0 ≤ ρ)
+theorem hadamard_factorization_of_order {f : ℂ → ℂ} {ρ : ℝ} (hρ : 0 ≤ ρ)
     (hentire : Differentiable ℂ f)
     (hnot : ∃ z : ℂ, f z ≠ 0)
-    (hgrowth : ∃ C > 0, ∀ z : ℂ, Real.log (1 + ‖f z‖) ≤ C * (1 + ‖z‖) ^ ρ) :
+    (horder :
+      ∀ ε : ℝ, 0 < ε →
+        ∃ C > 0, ∀ z : ℂ, ‖f z‖ ≤ Real.exp (C * (1 + ‖z‖) ^ (ρ + ε))) :
     ∃ (P : Polynomial ℂ),
       P.degree ≤ Nat.floor ρ ∧
       ∀ z : ℂ,
@@ -54,7 +68,7 @@ theorem hadamard_factorization_of_growth {f : ℂ → ℂ} {ρ : ℝ} (hρ : 0 �
             z ^ (analyticOrderNatAt f 0) *
             Complex.Hadamard.divisorCanonicalProduct (Nat.floor ρ) f (Set.univ : Set ℂ) z := by
   simpa using
-    (Complex.Hadamard.hadamard_factorization_of_growth (f := f) (ρ := ρ) hρ hentire hnot hgrowth)
+    (Complex.Hadamard.hadamard_factorization_of_order (f := f) (ρ := ρ) hρ hentire hnot horder)
 
 @[blueprint
   "completedRiemannZeta0_hadamard_factorization_intrinsic"
@@ -62,6 +76,9 @@ theorem hadamard_factorization_of_growth {f : ℂ → ℂ} {ρ : ℝ} (hρ : 0 �
   (statement := /--
     The entire completed Riemann zeta function `completedRiemannZeta₀` admits an intrinsic Hadamard
     factorization with genus `1` and an exponential factor of degree at most `1`.
+
+    Note: this is driven by the explicit growth estimate available in this repository (hence yields
+    “order at most `3/2`” and genus `⌊3/2⌋ = 1`), rather than the sharp order `1` statement.
   --/)
   (latexEnv := "theorem")]
 theorem completedRiemannZeta₀_hadamard_factorization_intrinsic :
