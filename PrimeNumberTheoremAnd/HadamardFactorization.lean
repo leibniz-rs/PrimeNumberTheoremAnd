@@ -11,7 +11,7 @@ import PrimeNumberTheoremAnd.Mathlib.Analysis.Complex.ZetaFiniteOrder
 
 blueprint_comment /--
 
-In this file, we expose blueprint-facing entry points for Hadamard factorization in the style of
+In this file, we expose Hadamard factorization API in the style of
 Tao’s notes (246B, Theorem 22 in `PrimeNumberTheoremAnd/hadamard.md`).
 
 Tao formulates “order at most `ρ`” using an \(ε\)-family of bounds of the shape
@@ -77,9 +77,6 @@ theorem hadamard_factorization_of_order {f : ℂ → ℂ} {ρ : ℝ} (hρ : 0 �
   (statement := /--
     The entire completed Riemann zeta function `completedRiemannZeta₀` admits an intrinsic Hadamard
     factorization with genus `1` and an exponential factor of degree at most `1`.
-
-    Note: this is driven by the explicit growth estimate available in this repository (hence yields
-    “order at most `3/2`” and genus `⌊3/2⌋ = 1`), rather than the sharp order `1` statement.
   --/)
   (latexEnv := "theorem")]
 theorem completedRiemannZeta₀_hadamard_factorization_intrinsic :

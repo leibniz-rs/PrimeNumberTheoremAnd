@@ -2854,5 +2854,3 @@ theorem hadamard_factorization_of_order {f : ℂ → ℂ} {ρ : ℝ} (hρ : 0 �
     simpa [m, hfloorτ] using hfac z
 
 end Complex.Hadamard
-
-#lint

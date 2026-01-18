@@ -11,7 +11,7 @@ This is the zeta-facing theorem that uses the intrinsic divisor-indexed canonica
 the intrinsic Hadamard factorization theorem from `Mathlib/Analysis/Complex/Hadamard.lean`.
 
 The analytic input is the growth bound proved in `ZetaFiniteOrder.lean`, and the structural input
-is the intrinsic Hadamard factorization theorem `Complex.Hadamard.hadamard_factorization_of_growth`.
+is the intrinsic Hadamard factorization theorem `Complex.Hadamard.hadamard_factorization_of_order`.
 -/
 
 noncomputable section
@@ -25,9 +25,9 @@ open scoped BigOperators
 /-!
 ## Zeta specialization: intrinsic Hadamard factorization for `completedRiemannZeta₀`
 
-This is the zeta-facing corollary: we combine the growth estimate
-`Complex.completedRiemannZeta₀_growth` (proved in `ZetaFiniteOrder.lean`) with the intrinsic
-Hadamard factorization theorem `Complex.Hadamard.hadamard_factorization_of_growth`.
+This is the zeta-facing corollary: we combine the sharp order-one `ε`-family bound
+`Complex.completedRiemannZeta₀_order_one` (proved in `ZetaFiniteOrder.lean`) with the intrinsic
+Hadamard factorization theorem `Complex.Hadamard.hadamard_factorization_of_order`.
 -/
 
 theorem completedRiemannZeta₀_hadamard_factorization_intrinsic :
@@ -38,16 +38,14 @@ theorem completedRiemannZeta₀_hadamard_factorization_intrinsic :
           Complex.exp (Polynomial.eval z P) *
             z ^ (analyticOrderNatAt completedRiemannZeta₀ 0) *
             Complex.Hadamard.divisorCanonicalProduct 1 completedRiemannZeta₀ (Set.univ : Set ℂ) z := by
-  have hρ : (0 : ℝ) ≤ (3 / 2 : ℝ) := by norm_num
   have hentire : Differentiable ℂ completedRiemannZeta₀ := differentiable_completedZeta₀
-  have hgrowth :
-      ∃ C > 0, ∀ z : ℂ,
-        Real.log (1 + ‖completedRiemannZeta₀ z‖) ≤ C * (1 + ‖z‖) ^ (3 / 2 : ℝ) := by
-    simpa using Complex.completedRiemannZeta₀_growth
-  have hfloor : (Nat.floor (3 / 2 : ℝ)) = 1 := by
-    have h1 : (1 : ℝ) ≤ (3 / 2 : ℝ) := by norm_num
-    have h2 : (3 / 2 : ℝ) < (1 : ℝ) + 1 := by norm_num
-    exact (Nat.floor_eq_iff (a := (3 / 2 : ℝ)) (n := 1) hρ).2 ⟨by simpa using h1, by simpa using h2⟩
+  have hρ : (0 : ℝ) ≤ (1 : ℝ) := by norm_num
+  have horder :
+      ∀ ε : ℝ, 0 < ε →
+        ∃ C > 0, ∀ z : ℂ,
+          ‖completedRiemannZeta₀ z‖ ≤ Real.exp (C * (1 + ‖z‖) ^ ((1 : ℝ) + ε)) := by
+    intro ε hε
+    simpa [add_comm, add_left_comm, add_assoc] using (Complex.completedRiemannZeta₀_order_one ε hε)
 
   -- Nontriviality witness: `Λ₀(2) = (π - 3) / 6`, and `π ≠ 3` by irrationality.
   have hnot : ∃ z : ℂ, completedRiemannZeta₀ z ≠ 0 := by
@@ -97,13 +95,18 @@ theorem completedRiemannZeta₀_hadamard_factorization_intrinsic :
     simpa [hΛ₀2] using this
 
   rcases
-      (Complex.Hadamard.hadamard_factorization_of_growth
-        (f := completedRiemannZeta₀) (ρ := (3 / 2 : ℝ))
-        hρ hentire hnot hgrowth) with
+      (Complex.Hadamard.hadamard_factorization_of_order
+        (f := completedRiemannZeta₀) (ρ := (1 : ℝ))
+        hρ hentire hnot (by
+          intro ε hε
+          rcases horder ε hε with ⟨C, hCpos, hC⟩
+          exact ⟨C, hCpos, by
+            intro z
+            simpa [add_comm, add_left_comm, add_assoc] using (hC z)⟩)) with
     ⟨P, hdeg, hfac⟩
   refine ⟨P, ?_, ?_⟩
-  · simpa [hfloor] using hdeg
+  · simpa using hdeg
   · intro z
-    simpa [hfloor] using hfac z
+    simpa using hfac z
 
 end Riemann
