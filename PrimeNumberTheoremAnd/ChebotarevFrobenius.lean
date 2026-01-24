@@ -96,6 +96,24 @@ theorem frobClassOver_eq_frobClass (P : Ideal R)
   simpa [this] using (frobClass_eq_of_under_eq (R := R) (S := S) (G := G)
     (Q := (Q0.1 : Ideal S)) (Q' := (Q.1 : Ideal S)) hunder)
 
+theorem frobClassOver_congr (P : Ideal R)
+    (hP hP' : ∃ Q : Ideal.primesOver P S, Finite (S ⧸ Q.1)) :
+    frobClassOver (R := R) (S := S) (G := G) P hP =
+      frobClassOver (R := R) (S := S) (G := G) P hP' := by
+  classical
+  -- Compare both sides to `frobClass` at a fixed prime `Q` above `P`.
+  let Q : Ideal.primesOver P S := Classical.choose hP
+  letI : Finite (S ⧸ (Q.1 : Ideal S)) := Classical.choose_spec hP
+  have h1 :
+      frobClassOver (R := R) (S := S) (G := G) P hP =
+        frobClass (R := R) (G := G) (Q := (Q.1 : Ideal S)) := by
+    simpa using (frobClassOver_eq_frobClass (R := R) (S := S) (G := G) (P := P) (hP := hP) Q)
+  have h2 :
+      frobClassOver (R := R) (S := S) (G := G) P hP' =
+        frobClass (R := R) (G := G) (Q := (Q.1 : Ideal S)) := by
+    simpa using (frobClassOver_eq_frobClass (R := R) (S := S) (G := G) (P := P) (hP := hP') Q)
+  simpa [h1, h2]
+
 end primesOver
 
 end Chebotarev
