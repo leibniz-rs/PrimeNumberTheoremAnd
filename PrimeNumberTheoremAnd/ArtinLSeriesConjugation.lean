@@ -78,11 +78,12 @@ lemma eulerPoly_conj (M A : Matrix n n ℂ) (hM : IsUnit M) :
   let Mc : Matrix n n ℂ⟦X⟧ := F M
   have hMc : IsUnit Mc := hM.map F
   let Ac : Matrix n n ℂ⟦X⟧ := F A
+  have hFinv : F (M⁻¹) = (F M)⁻¹ :=
+    PrimeNumberTheoremAnd.ArtinLSeries.RingHom.mapMatrix_inv_of_isUnit (f := f) (M := M) hM
+  have hFinv' : (M⁻¹).map f = (M.map f)⁻¹ := by
+    simpa [F] using hFinv
   have hconj :
       F (M * A * M⁻¹) = Mc * Ac * Mc⁻¹ := by
-    have hFinv :
-        F (M⁻¹) = (F M)⁻¹ :=
-      PrimeNumberTheoremAnd.ArtinLSeries.RingHom.mapMatrix_inv_of_isUnit (f := f) (M := M) hM
     -- unfold `Mc`/`Ac` only at the end
     calc
       F (M * A * M⁻¹) = F M * F A * F (M⁻¹) := by simp [mul_assoc]
@@ -101,7 +102,9 @@ lemma eulerPoly_conj (M A : Matrix n n ℂ) (hM : IsUnit M) :
         Matrix.det ((1 : Matrix n n ℂ⟦X⟧) - (PowerSeries.X : ℂ⟦X⟧) • Ac) := by
     simpa [hx] using (Matrix.det_conj (M := Mc) hMc
       ((1 : Matrix n n ℂ⟦X⟧) - (PowerSeries.X : ℂ⟦X⟧) • Ac))
-  simpa [ArtinLSeries.eulerPoly, f, F, Mc, Ac, hconj] using hdet
+  -- The extra `hFinv` rewrite is essential: it replaces `(M⁻¹).map f` by `(M.map f)⁻¹`,
+  -- avoiding a spurious mismatch between “map then invert” vs “invert then map”.
+  simpa [ArtinLSeries.eulerPoly, f, F, Mc, Ac, hconj, hFinv'] using hdet
 
 end ConjInvariance
 

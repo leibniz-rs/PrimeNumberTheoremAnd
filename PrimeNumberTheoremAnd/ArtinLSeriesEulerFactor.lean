@@ -32,12 +32,11 @@ open Matrix PowerSeries
 
 section EulerFactor
 
-variable {n : Type*} [Fintype n]
+variable {n : Type*} [Fintype n] [DecidableEq n]
 
 /-- The polynomial (in the power-series variable `X`) whose inverse is the Euler factor. -/
-noncomputable def eulerPoly (A : Matrix n n ℂ) : ℂ⟦X⟧ := by
-  classical
-  exact Matrix.det
+noncomputable def eulerPoly (A : Matrix n n ℂ) : ℂ⟦X⟧ :=
+  Matrix.det
     ((1 : Matrix n n ℂ⟦X⟧) -
       (PowerSeries.X : ℂ⟦X⟧) • (PowerSeries.C : ℂ →+* ℂ⟦X⟧).mapMatrix A)
 
@@ -90,7 +89,7 @@ end EulerFactor
 
 section Assemble
 
-variable {n : Type*} [Fintype n]
+variable {n : Type*} [Fintype n] [DecidableEq n]
 
 /--
 Build `ArtinLike.LocalCoeffs` from a family of matrices indexed by primes,
