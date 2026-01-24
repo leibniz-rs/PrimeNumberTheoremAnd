@@ -6,6 +6,12 @@ import Mathlib.NumberTheory.LSeries.DirichletContinuation
 import Mathlib.NumberTheory.LSeries.Nonvanishing
 import Mathlib.Algebra.Group.Conj
 import PrimeNumberTheoremAnd.ChebotarevDirichletDensity
+import PrimeNumberTheoremAnd.ChebotarevFrobenius
+import PrimeNumberTheoremAnd.ChebotarevSets
+import PrimeNumberTheoremAnd.ChebotarevDecomposition
+import PrimeNumberTheoremAnd.ArtinLikeLSeries
+import PrimeNumberTheoremAnd.ArtinLSeriesEulerFactor
+import PrimeNumberTheoremAnd.ChebotarevReduction
 
 /-!
 ## Chebotarev density theorem (work in progress)
@@ -118,64 +124,12 @@ theorem ncard_conjugatesOf_eq_index_centralizer (g : G) :
 
 end ConjugacyCounting
 
-/-! ### 4. Frobenius elements: conjugacy over a fixed base prime -/
+/-!
+### 4. Frobenius elements and classes
 
-section FrobeniusConjugacy
-
-open scoped Classical
-
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-variable {G : Type*} [Group G] [Finite G]
-  [MulSemiringAction G S] [SMulCommClass G R S] [Algebra.IsInvariant R S G]
-variable {Q Q' : Ideal S} [Q.IsPrime] [Q'.IsPrime]
-variable [Finite (S ⧸ Q)] [Finite (S ⧸ Q')]
-
-/--
-In the Galois setting (finite group action, invariant base), Frobenius elements at primes lying
-over the same base prime are conjugate.
-
-This is exactly mathlib’s `_root_.isConj_arithFrobAt`, restated with explicit parameters.
+These are developed as a standalone prerequisite file:
+`PrimeNumberTheoremAnd.ChebotarevFrobenius`.
 -/
-theorem isConj_arithFrobAt_of_under_eq (h : Q.under R = Q'.under R) :
-    IsConj (arithFrobAt (R := R) (G := G) Q) (arithFrobAt (R := R) (G := G) Q') := by
-  simpa using (_root_.isConj_arithFrobAt (R := R) (S := S) (G := G) (Q := Q) (Q' := Q') h)
-
-end FrobeniusConjugacy
-
-/-! ### 5. Frobenius conjugacy class attached to a prime -/
-
-section FrobeniusClass
-
-open scoped Classical
-
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-variable {G : Type*} [Group G] [Finite G]
-  [MulSemiringAction G S] [SMulCommClass G R S] [Algebra.IsInvariant R S G]
-
-variable (R G)
-
-/--
-Given a prime ideal `Q` of `S` with finite residue ring, define the Frobenius element at `Q`
-as a conjugacy class in `G`.
-
-This is the right object for Chebotarev: it is invariant under replacing `Q` by another prime
-lying over the same prime of `R`.
--/
-noncomputable def frobClass (Q : Ideal S) [Q.IsPrime] [Finite (S ⧸ Q)] : ConjClasses G :=
-  ConjClasses.mk (arithFrobAt (R := R) (G := G) Q)
-
-variable {R G}
-
-@[simp]
-theorem frobClass_eq_of_under_eq (Q Q' : Ideal S) [Q.IsPrime] [Finite (S ⧸ Q)]
-    [Q'.IsPrime] [Finite (S ⧸ Q')] (h : Q.under R = Q'.under R) :
-    frobClass (R := R) (G := G) Q = frobClass (R := R) (G := G) Q' := by
-  classical
-  -- `arithFrobAt`'s are conjugate above the same base prime, hence define the same class.
-  apply (ConjClasses.mk_eq_mk_iff_isConj).2
-  simpa using (isConj_arithFrobAt_of_under_eq (R := R) (S := S) (G := G) (Q := Q) (Q' := Q') h)
-
-end FrobeniusClass
 
 /-! ### 5. Analytic prerequisites: what mathlib has (Dirichlet), and what it doesn’t (Artin) -/
 
@@ -189,25 +143,29 @@ continuation, functional equation, nonvanishing on `re s ≥ 1`, etc.), develope
 By contrast, **Artin** L-functions are not (yet) defined in mathlib; for Chebotarev one should
 therefore either:
 - reduce analytic input to the Dirichlet (cyclotomic / abelian-over-ℚ) case where possible; or
-- package the Artin-L-function properties needed by Sharifi as explicit hypotheses/axioms.
+- build Artin \(L\)-functions as a library development.
+
+As a first, purely foundational step toward the latter, the file
+`PrimeNumberTheoremAnd.ArtinLikeLSeries` packages the *naive Euler product ↔ Dirichlet series*
+identity for L-series assembled from local prime-power data, under explicit summability hypotheses.
 -/
 
 open scoped Real Topology
 open Filter Complex
 
-namespace DirichletCharacter
+section
 
-variable {N : ℕ} [NeZero N] (χ : DirichletCharacter ℂ N)
+variable {N : ℕ} [NeZero N] (χ : _root_.DirichletCharacter ℂ N)
 
 lemma LFunction_eq_LSeries_of_one_lt_re {s : ℂ} (hs : 1 < s.re) :
-    LFunction χ s = LSeries (χ ·) s :=
-  DirichletCharacter.LFunction_eq_LSeries χ hs
+    _root_.DirichletCharacter.LFunction χ s = LSeries (χ ·) s :=
+  _root_.DirichletCharacter.LFunction_eq_LSeries χ hs
 
 lemma LFunction_ne_zero_of_one_le_re {s : ℂ} (hχs : χ ≠ 1 ∨ s ≠ 1) (hs : 1 ≤ s.re) :
-    LFunction χ s ≠ 0 :=
-  DirichletCharacter.LFunction_ne_zero_of_one_le_re (χ := χ) hχs hs
+    _root_.DirichletCharacter.LFunction χ s ≠ 0 :=
+  _root_.DirichletCharacter.LFunction_ne_zero_of_one_le_re (χ := χ) hχs hs
 
-end DirichletCharacter
+end
 
 end DirichletAnalytic
 
