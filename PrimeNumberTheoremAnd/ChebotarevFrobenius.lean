@@ -107,16 +107,17 @@ theorem frobClassOver_congr (P : Ideal R)
   have h1 :
       frobClassOver (R := R) (S := S) (G := G) P hP =
         frobClass (R := R) (G := G) (Q := (Q.1 : Ideal S)) := by
-    simpa using (frobClassOver_eq_frobClass (R := R) (S := S) (G := G) (P := P) (hP := hP) Q)
+    simpa using
+      (frobClassOver_eq_frobClass (R := R) (S := S) (G := G) (P := P) (hP := hP) Q)
   have h2 :
       frobClassOver (R := R) (S := S) (G := G) P hP' =
         frobClass (R := R) (G := G) (Q := (Q.1 : Ideal S)) := by
-    simpa using (frobClassOver_eq_frobClass (R := R) (S := S) (G := G) (P := P) (hP := hP') Q)
-  simpa [h1, h2]
+    simpa using
+      (frobClassOver_eq_frobClass (R := R) (S := S) (G := G) (P := P) (hP := hP') Q)
+  simp [h1]
 
 end primesOver
 
 end Chebotarev
 
 end PrimeNumberTheoremAnd
-

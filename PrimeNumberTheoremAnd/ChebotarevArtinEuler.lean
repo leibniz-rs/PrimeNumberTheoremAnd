@@ -78,11 +78,31 @@ noncomputable def artinEulerFactorOver (P : Ideal R)
   (PrimeNumberTheoremAnd.ArtinLSeries.ArtinRep.eulerFactorClass (ρ := ρ))
     (PrimeNumberTheoremAnd.Chebotarev.frobClassOver (R := R) (S := S) (G := G) P hP)
 
+theorem artinEulerFactorOver_congr (P : Ideal R)
+    (hP hP' : ∃ Q : Ideal.primesOver P S, Finite (S ⧸ Q.1)) :
+    artinEulerFactorOver (R := R) (S := S) (G := G) ρ P hP =
+      artinEulerFactorOver (R := R) (S := S) (G := G) ρ P hP' := by
+  classical
+  simpa [artinEulerFactorOver] using
+    congrArg (PrimeNumberTheoremAnd.ArtinLSeries.ArtinRep.eulerFactorClass (ρ := ρ))
+      (PrimeNumberTheoremAnd.Chebotarev.frobClassOver_congr
+        (R := R) (S := S) (G := G) (P := P) hP hP')
+
 /-- The `e`-th coefficient of the Artin Euler factor at a base ideal `P`, via `frobClassOver`. -/
 noncomputable def artinEulerCoeffOver (P : Ideal R)
     (hP : ∃ Q : Ideal.primesOver P S, Finite (S ⧸ Q.1)) (e : ℕ) : ℂ :=
   (PrimeNumberTheoremAnd.ArtinLSeries.ArtinRep.eulerCoeffClass (ρ := ρ) e)
     (PrimeNumberTheoremAnd.Chebotarev.frobClassOver (R := R) (S := S) (G := G) P hP)
+
+theorem artinEulerCoeffOver_congr (P : Ideal R)
+    (hP hP' : ∃ Q : Ideal.primesOver P S, Finite (S ⧸ Q.1)) (e : ℕ) :
+    artinEulerCoeffOver (R := R) (S := S) (G := G) ρ P hP e =
+      artinEulerCoeffOver (R := R) (S := S) (G := G) ρ P hP' e := by
+  classical
+  simpa [artinEulerCoeffOver] using
+    congrArg (PrimeNumberTheoremAnd.ArtinLSeries.ArtinRep.eulerCoeffClass (ρ := ρ) e)
+      (PrimeNumberTheoremAnd.Chebotarev.frobClassOver_congr
+        (R := R) (S := S) (G := G) (P := P) hP hP')
 
 @[simp] lemma artinEulerCoeffOver_zero (P : Ideal R)
     (hP : ∃ Q : Ideal.primesOver P S, Finite (S ⧸ Q.1)) :

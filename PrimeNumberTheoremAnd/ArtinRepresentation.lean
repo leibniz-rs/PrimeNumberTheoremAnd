@@ -59,7 +59,8 @@ lemma eulerPolyAt_eq_of_isConj {g h : G} (hg : IsConj g h) :
   -- Turn semiconjugation into the usual conjugation formula.
   have hconj : (↑c : G) * g * (↑c : G)⁻¹ = h := by
     have := congrArg (fun t : G => t * (↑(c⁻¹) : G)) hc
-    simpa [SemiconjBy, mul_assoc] using this
+    simp [mul_assoc] at this
+    simpa [mul_assoc] using this
   have hunit : IsUnit (ρ.mat (↑c : G)) := by
     simpa [ArtinRep.mat] using (ρ.ρ (↑c : G)).isUnit
   -- Rewrite `h` as a conjugate and use the matrix-level lemma `eulerPoly_conj`.

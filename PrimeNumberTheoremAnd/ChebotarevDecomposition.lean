@@ -88,7 +88,6 @@ abbrev inertiaSubgroupOf (Q : Ideal S) : Subgroup (decomposition (G := G) Q) :=
 instance inertiaSubgroupOf_normal (Q : Ideal S) :
     (inertiaSubgroupOf (G := G) Q).Normal := by
   classical
-  -- Direct proof: inertia is stable under conjugation by the stabilizer.
   refine ⟨?_⟩
   intro n hn g
   change (g.1 * n.1 * g.1⁻¹) ∈ inertia (G := G) Q

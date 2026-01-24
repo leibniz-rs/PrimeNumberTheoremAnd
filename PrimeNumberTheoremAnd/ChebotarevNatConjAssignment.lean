@@ -36,6 +36,17 @@ noncomputable def frobClassOverNat (P : Nat.Primes → Ideal R)
     Nat.Primes → ConjClasses G :=
   fun p => PrimeNumberTheoremAnd.Chebotarev.frobClassOver (R := R) (S := S) (G := G) (P p) (hP p)
 
+theorem frobClassOverNat_congr (P : Nat.Primes → Ideal R)
+    (hP hP' : ∀ p : Nat.Primes, ∃ Q : Ideal.primesOver (P p) S, Finite (S ⧸ Q.1)) :
+    frobClassOverNat (R := R) (S := S) (G := G) P hP =
+      frobClassOverNat (R := R) (S := S) (G := G) P hP' := by
+  classical
+  funext p
+  -- Pointwise, this is exactly `frobClassOver_congr`.
+  simpa [frobClassOverNat] using
+    (PrimeNumberTheoremAnd.Chebotarev.frobClassOver_congr (R := R) (S := S) (G := G)
+      (P := P p) (hP := hP p) (hP' := hP' p))
+
 end
 
 end Chebotarev
