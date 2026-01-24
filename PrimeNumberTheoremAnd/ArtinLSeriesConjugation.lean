@@ -38,9 +38,26 @@ lemma mapMatrix_inv_of_isUnit (f : R →+* S) (M : Matrix n n R) (hM : IsUnit M)
       ((f.mapMatrix : Matrix n n R →+* Matrix n n S) M)⁻¹ := by
   classical
   rcases hM with ⟨u, rfl⟩
-  -- Rewrite everything in terms of units and use that `Units.map` preserves inverses.
-  -- `Matrix.coe_units_inv` connects unit inverse with matrix inverse.
-  simp [Matrix.coe_units_inv]
+  -- Convert the matrix inverse to the unit inverse (`Matrix.coe_units_inv`),
+  -- then use functoriality of `Units.map`.
+  let F : Matrix n n R →+* Matrix n n S := (f.mapMatrix : Matrix n n R →+* Matrix n n S)
+  let Fu : (Matrix n n S)ˣ := Units.map (RingHom.toMonoidHom F) u
+  have hinvR : ((↑u : Matrix n n R)⁻¹) = (↑(u⁻¹) : Matrix n n R) := by
+    -- `Matrix.coe_units_inv` is `↑u⁻¹ = (↑u)⁻¹`.
+    simpa using (Matrix.coe_units_inv u).symm
+  have hinvS : ((↑Fu : Matrix n n S)⁻¹) = (↑(Fu⁻¹) : Matrix n n S) := by
+    simpa using (Matrix.coe_units_inv Fu).symm
+  -- Now both sides reduce to `↑(Fu⁻¹)`.
+  calc
+    F ((↑u : Matrix n n R)⁻¹)
+        = F (↑(u⁻¹) : Matrix n n R) := by simp_rw [hinvR]
+    _ = (↑(Units.map (RingHom.toMonoidHom F) (u⁻¹)) : Matrix n n S) := rfl
+    _ = (↑(Fu⁻¹) : Matrix n n S) := by
+          -- `Units.map` preserves inverses.
+          simpa [Fu] using congrArg (fun x => (↑x : Matrix n n S)) (Units.map_inv (RingHom.toMonoidHom F) u)
+    _ = (↑Fu : Matrix n n S)⁻¹ := by simp_rw [hinvS]
+    _ = (F (↑u : Matrix n n R))⁻¹ := by rfl
+
 
 end RingHom
 
@@ -57,49 +74,37 @@ lemma eulerPoly_conj (M A : Matrix n n ℂ) (hM : IsUnit M) :
   classical
   -- Work in `ℂ⟦X⟧` and use `Matrix.det_conj` there.
   let f : ℂ →+* ℂ⟦X⟧ := PowerSeries.C
-  let Mc : Matrix n n ℂ⟦X⟧ := (f.mapMatrix : Matrix n n ℂ →+* Matrix n n ℂ⟦X⟧) M
-  have hMc : IsUnit Mc := hM.map (f.mapMatrix : Matrix n n ℂ →+* Matrix n n ℂ⟦X⟧)
-  let Ac : Matrix n n ℂ⟦X⟧ := (f.mapMatrix : Matrix n n ℂ →+* Matrix n n ℂ⟦X⟧) A
-  -- First, rewrite the `mapMatrix` of `M * A * M⁻¹` as a conjugate.
+  let F : Matrix n n ℂ →+* Matrix n n ℂ⟦X⟧ := (f.mapMatrix : Matrix n n ℂ →+* Matrix n n ℂ⟦X⟧)
+  let Mc : Matrix n n ℂ⟦X⟧ := F M
+  have hMc : IsUnit Mc := hM.map F
+  let Ac : Matrix n n ℂ⟦X⟧ := F A
   have hconj :
-      (f.mapMatrix : Matrix n n ℂ →+* Matrix n n ℂ⟦X⟧) (M * A * M⁻¹) = Mc * Ac * Mc⁻¹ := by
-    -- Multiplicativity plus the inverse-compatibility lemma for unit matrices.
-    simp [Mc, Ac, mul_assoc, RingHom.mapMatrix_inv_of_isUnit (f := f) (M := M) hM]
-  -- Now compute the determinant polynomial and apply conjugation invariance of `det`.
-  -- The scalar `X` commutes with matrices since the coefficient ring is commutative.
-  have hmain :
-      ((1 : Matrix n n ℂ⟦X⟧) - (PowerSeries.X : ℂ⟦X⟧) • (f.mapMatrix A)) =
-        Mc⁻¹ * ((1 : Matrix n n ℂ⟦X⟧) - (PowerSeries.X : ℂ⟦X⟧) • Ac) * Mc := by
-    -- This is just reassociation/commutativity; we keep it explicit to avoid `simp` loops.
-    -- (We don't actually need this direction; it's here as a “normal form” helper.)
-    simp [Ac, Mc, mul_assoc]
-  -- Use `Matrix.det_conj` with the unit `Mc` on the matrix `1 - X•Ac`.
-  have : Matrix.det ((1 : Matrix n n ℂ⟦X⟧) - (PowerSeries.X : ℂ⟦X⟧) • (Mc * Ac * Mc⁻¹)) =
-      Matrix.det ((1 : Matrix n n ℂ⟦X⟧) - (PowerSeries.X : ℂ⟦X⟧) • Ac) := by
-    -- Rewrite the left-hand matrix as a conjugate and apply `det_conj`.
-    -- `Matrix.det_conj` is in `Matrix.NonsingularInverse`.
-    -- We use `hMc` to justify the conjugation.
-    -- The key algebraic identity:
-    --   1 - X•(Mc*Ac*Mc⁻¹) = Mc * (1 - X•Ac) * Mc⁻¹
-    -- since scalars commute in the commutative coefficient ring.
-    have hx :
-        (1 : Matrix n n ℂ⟦X⟧) - (PowerSeries.X : ℂ⟦X⟧) • (Mc * Ac * Mc⁻¹) =
-          Mc * ((1 : Matrix n n ℂ⟦X⟧) - (PowerSeries.X : ℂ⟦X⟧) • Ac) * Mc⁻¹ := by
-      ext i j
-      -- entrywise expansion; `simp` is safe here (no recursion) thanks to commutativity.
-      simp [Mc, Ac, mul_assoc, mul_add, add_mul, sub_eq_add_neg, smul_mul_assoc, mul_smul_comm,
-        mul_comm, mul_left_comm, mul_assoc]
-    -- Now apply determinant conjugation.
-    simpa [hx] using (Matrix.det_conj (M := Mc) hMc ((1 : Matrix n n ℂ⟦X⟧) -
-      (PowerSeries.X : ℂ⟦X⟧) • Ac)).symm
-  -- Finally, unwrap `eulerPoly`.
-  -- `eulerPoly` is defined as `det (1 - X•C.mapMatrix _)`.
-  -- Use `hconj` and `this`.
-  simpa [ArtinLSeries.eulerPoly, f, Mc, Ac, hconj] using this
+      F (M * A * M⁻¹) = Mc * Ac * Mc⁻¹ := by
+    have hFinv :
+        F (M⁻¹) = (F M)⁻¹ :=
+      PrimeNumberTheoremAnd.ArtinLSeries.RingHom.mapMatrix_inv_of_isUnit (f := f) (M := M) hM
+    -- unfold `Mc`/`Ac` only at the end
+    calc
+      F (M * A * M⁻¹) = F M * F A * F (M⁻¹) := by simp [mul_assoc]
+      _ = F M * F A * (F M)⁻¹ := by simp [hFinv]
+      _ = Mc * Ac * Mc⁻¹ := by rfl
+  have hx :
+      (1 : Matrix n n ℂ⟦X⟧) - (PowerSeries.X : ℂ⟦X⟧) • (Mc * Ac * Mc⁻¹) =
+        Mc * ((1 : Matrix n n ℂ⟦X⟧) - (PowerSeries.X : ℂ⟦X⟧) • Ac) * Mc⁻¹ := by
+    -- Expand and simplify using `Mc * Mc⁻¹ = 1`.
+    have hdet : IsUnit (Matrix.det Mc) := (Matrix.isUnit_iff_isUnit_det (A := Mc)).1 hMc
+    have hmul : Mc * Mc⁻¹ = (1 : Matrix n n ℂ⟦X⟧) := Matrix.mul_nonsing_inv (A := Mc) hdet
+    ext i j
+    simp [hmul, Mc, Ac, mul_assoc, mul_add, add_mul, sub_eq_add_neg]
+  have hdet :
+      Matrix.det ((1 : Matrix n n ℂ⟦X⟧) - (PowerSeries.X : ℂ⟦X⟧) • (Mc * Ac * Mc⁻¹)) =
+        Matrix.det ((1 : Matrix n n ℂ⟦X⟧) - (PowerSeries.X : ℂ⟦X⟧) • Ac) := by
+    simpa [hx] using (Matrix.det_conj (M := Mc) hMc
+      ((1 : Matrix n n ℂ⟦X⟧) - (PowerSeries.X : ℂ⟦X⟧) • Ac))
+  simpa [ArtinLSeries.eulerPoly, f, F, Mc, Ac, hconj] using hdet
 
 end ConjInvariance
 
 end ArtinLSeries
 
 end PrimeNumberTheoremAnd
-
