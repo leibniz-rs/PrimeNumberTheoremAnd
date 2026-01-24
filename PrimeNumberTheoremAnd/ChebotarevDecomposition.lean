@@ -91,28 +91,21 @@ instance inertiaSubgroupOf_normal (Q : Ideal S) :
   -- Direct proof: inertia is stable under conjugation by the stabilizer.
   refine ⟨?_⟩
   intro n hn g
-  -- It suffices to show the underlying element of `G` lies in `inertia Q`.
   change (g.1 * n.1 * g.1⁻¹) ∈ inertia (G := G) Q
   intro x
-  -- Apply the inertia condition for `n` to `g⁻¹ • x`.
   have hn' : n.1 • (g.1⁻¹ • x) - (g.1⁻¹ • x) ∈ Q := by
-    -- `hn` is membership in the subgroup-of, hence in `inertia Q`.
     have : n.1 ∈ inertia (G := G) Q := by
       simpa [inertiaSubgroupOf] using hn
     exact this (g.1⁻¹ • x)
-  -- Apply `g` to this; since `g` stabilizes `Q`, the result lies in `Q`.
   have : g.1 • (n.1 • (g.1⁻¹ • x) - (g.1⁻¹ • x)) ∈ Q := by
-    -- Since `hn' : r ∈ Q`, we have `g • r ∈ g • Q`, hence in `Q` since `g` stabilizes `Q`.
     have hmem : g.1 • (n.1 • (g.1⁻¹ • x) - (g.1⁻¹ • x)) ∈ g.1 • Q :=
       (Ideal.smul_mem_pointwise_smul_iff (a := g.1) (S := Q)
         (x := (n.1 • (g.1⁻¹ • x) - (g.1⁻¹ • x)))).2 hn'
     have h : g.1 • (n.1 • (g.1⁻¹ • x) - (g.1⁻¹ • x)) ∈ Q := by
-      -- rewrite `g • Q = Q` in `hmem`
       have h' := hmem
       rw [g.2] at h'
       exact h'
     exact h
-  -- Convert the membership of `g • (...)` into the inertia membership for `g * n * g⁻¹`.
   have hcalc :
       g.1 • (n.1 • (g.1⁻¹ • x) - (g.1⁻¹ • x)) = (g.1 * n.1 * g.1⁻¹) • x - x := by
     calc
@@ -128,7 +121,6 @@ instance inertiaSubgroupOf_normal (Q : Ideal S) :
               simp [h1, h2]
       _ = (g.1 * n.1 * g.1⁻¹) • x - x := by
               simp [smul_smul, mul_assoc]
-  -- Finish.
   simpa [hcalc] using this
 
 /--
@@ -178,4 +170,3 @@ end
 end Chebotarev
 
 end PrimeNumberTheoremAnd
-
