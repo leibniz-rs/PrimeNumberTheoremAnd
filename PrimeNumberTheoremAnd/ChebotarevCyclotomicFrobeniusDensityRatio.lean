@@ -1,5 +1,6 @@
 import PrimeNumberTheoremAnd.ChebotarevDirichletDensity
 import PrimeNumberTheoremAnd.ChebotarevCyclotomicFrobeniusPrimeSet
+import PrimeNumberTheoremAnd.ChebotarevEnoughRootsOfUnityComplex
 
 /-!
 ## Cyclotomic case: Dirichlet-density ratio for Frobenius prime sets (algebraic rewrite)
@@ -25,7 +26,6 @@ open PrimeNumberTheoremAnd.DirichletDensity
 section
 
 variable {n : ℕ} [NeZero n]
-variable [HasEnoughRootsOfUnity ℂ (Monoid.exponent (ZMod n)ˣ)]
 
 variable (L : Type*) [Field L] [NumberField L] [IsCyclotomicExtension {n} ℚ L]
 

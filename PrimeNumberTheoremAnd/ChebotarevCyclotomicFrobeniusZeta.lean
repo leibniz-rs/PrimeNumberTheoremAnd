@@ -5,6 +5,7 @@ import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
 import Mathlib.NumberTheory.Cyclotomic.Gal
 import Mathlib.SetTheory.Cardinal.Finite
 import PrimeNumberTheoremAnd.ChebotarevCyclotomicOrthogonality
+import PrimeNumberTheoremAnd.ChebotarevEnoughRootsOfUnityComplex
 
 /-!
 ## Cyclotomic step: Frobenius sends `ζₙ ↦ ζₙ^p` (algebraic core)
@@ -178,10 +179,8 @@ Dirichlet-character sum detecting the congruence class `p` in `ZMod n`.
 This is the algebraic bridge in Sharifi’s Step 1, prior to taking analytic limits.
 -/
 theorem frob_indicator_eq_character_sum
-    [HasEnoughRootsOfUnity ℂ (Monoid.exponent (ZMod n)ˣ)]
-    (Q : Ideal 𝓞L) [Q.IsPrime] [Finite (𝓞L ⧸ Q)]
-    [Q.LiesOver (Ideal.span ({(p : ℤ)} : Set ℤ))] [IsGalois ℚ L]
-    (σ : Gal(L/ℚ)) (hn : ¬ p ∣ n) :
+    (Q : Ideal 𝓞L) [Q.IsPrime] [Finite (𝓞L ⧸ Q)] [Q.LiesOver (Ideal.span ({(p : ℤ)} : Set ℤ))]
+    [IsGalois ℚ L] (σ : Gal(L/ℚ)) (hn : ¬ p ∣ n) :
     (if arithFrobAt (R := ℤ) (G := Gal(L/ℚ)) Q = σ then (1 : ℂ) else 0)
       =
     (∑ χ : DirichletCharacter ℂ n,

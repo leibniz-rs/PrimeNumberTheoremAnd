@@ -1,5 +1,6 @@
 import PrimeNumberTheoremAnd.ChebotarevDirichletDensityTsumPrimes
 import PrimeNumberTheoremAnd.ChebotarevCyclotomicFrobeniusPrimeSet
+import PrimeNumberTheoremAnd.ChebotarevEnoughRootsOfUnityComplex
 
 /-!
 ## Cyclotomic case: Frobenius prime series as a `tsum` over `Nat.Primes`
@@ -23,7 +24,6 @@ open PrimeNumberTheoremAnd.DirichletDensity
 section
 
 variable {n : ℕ} [NeZero n]
-variable [HasEnoughRootsOfUnity ℂ (Monoid.exponent (ZMod n)ˣ)]
 
 variable (L : Type*) [Field L] [NumberField L] [IsCyclotomicExtension {n} ℚ L]
 

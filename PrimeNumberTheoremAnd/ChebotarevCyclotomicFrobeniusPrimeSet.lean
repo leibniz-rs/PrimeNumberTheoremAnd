@@ -1,4 +1,5 @@
 import PrimeNumberTheoremAnd.ChebotarevCyclotomicPrimeSeries
+import PrimeNumberTheoremAnd.ChebotarevEnoughRootsOfUnityComplex
 import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
 import Mathlib.NumberTheory.Cyclotomic.Gal
 
@@ -32,8 +33,6 @@ variable (L : Type*) [Field L] [NumberField L] [IsCyclotomicExtension {n} ℚ L]
 /-- The “cyclotomic Frobenius prime set” attached to `σ`: primes congruent to `autToPow σ` mod `n`. -/
 def frobPrimeSet (σ : Gal(L/ℚ)) : Set ℕ :=
   congrPrimeSet (n := n) ((zeta_spec n ℚ L).autToPow ℚ σ)
-
-variable [HasEnoughRootsOfUnity ℂ (Monoid.exponent (ZMod n)ˣ)]
 
 /-- Dirichlet-density coefficients of the Frobenius prime set as a normalized character sum. -/
 lemma coeff_frobPrimeSet_eq (σ : Gal(L/ℚ)) (m : ℕ) :

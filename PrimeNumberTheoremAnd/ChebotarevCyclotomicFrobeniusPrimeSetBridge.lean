@@ -1,5 +1,6 @@
 import PrimeNumberTheoremAnd.ChebotarevCyclotomicFrobeniusPrimeSet
 import PrimeNumberTheoremAnd.ChebotarevCyclotomicFrobeniusCongruence
+import PrimeNumberTheoremAnd.ChebotarevEnoughRootsOfUnityComplex
 
 /-!
 ## Cyclotomic case: Frobenius indicator equals the prime-set coefficient
@@ -71,8 +72,7 @@ theorem frob_indicator_eq_coeff_frobPrimeSet (hn : ¬ p ∣ n) :
 ### Character-sum form (prime specialization)
 -/
 
-theorem frob_indicator_eq_character_sum (hn : ¬ p ∣ n)
-    [HasEnoughRootsOfUnity ℂ (Monoid.exponent (ZMod n)ˣ)] :
+theorem frob_indicator_eq_character_sum (hn : ¬ p ∣ n) :
     (if arithFrobAt (R := ℤ) (G := Gal(L/ℚ)) Q = σ then (1 : ℂ) else 0)
       =
     ((1 : ℂ) / (n.totient : ℂ)) *

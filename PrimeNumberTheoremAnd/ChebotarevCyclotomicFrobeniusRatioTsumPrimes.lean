@@ -1,6 +1,7 @@
 import PrimeNumberTheoremAnd.ChebotarevCyclotomicFrobeniusDensityRatio
 import PrimeNumberTheoremAnd.ChebotarevDirichletDensityTsumPrimes
 import PrimeNumberTheoremAnd.ChebotarevCyclotomicFrobeniusPrimeTsumPrimes
+import PrimeNumberTheoremAnd.ChebotarevEnoughRootsOfUnityComplex
 
 /-!
 ## Cyclotomic case: Dirichlet-density ratio as a quotient of prime-indexed sums
@@ -28,7 +29,6 @@ open PrimeNumberTheoremAnd.DirichletDensity
 section
 
 variable {n : ℕ} [NeZero n]
-variable [HasEnoughRootsOfUnity ℂ (Monoid.exponent (ZMod n)ˣ)]
 
 variable (L : Type*) [Field L] [NumberField L] [IsCyclotomicExtension {n} ℚ L]
 

@@ -1,5 +1,6 @@
 import PrimeNumberTheoremAnd.ChebotarevDirichletDensity
 import PrimeNumberTheoremAnd.ChebotarevCyclotomicOrthogonality
+import PrimeNumberTheoremAnd.ChebotarevEnoughRootsOfUnityComplex
 import Mathlib.NumberTheory.DirichletCharacter.Basic
 import Mathlib.Data.Complex.Basic
 
@@ -27,7 +28,6 @@ namespace Cyclotomic
 section
 
 variable {n : ℕ} [NeZero n]
-variable [HasEnoughRootsOfUnity ℂ (Monoid.exponent (ZMod n)ˣ)]
 
 open PrimeNumberTheoremAnd.DirichletDensity
 

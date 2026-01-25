@@ -1,5 +1,6 @@
 import Mathlib.NumberTheory.DirichletCharacter.Orthogonality
 import Mathlib.Data.Complex.Basic
+import PrimeNumberTheoremAnd.ChebotarevEnoughRootsOfUnityComplex
 
 /-!
 ## Cyclotomic case: orthogonality as an indicator function
@@ -33,9 +34,6 @@ open DirichletCharacter
 section
 
 variable {n : ℕ} [NeZero n]
-
--- We work over `ℂ`, which has enough roots of unity.
-variable [HasEnoughRootsOfUnity ℂ (Monoid.exponent (ZMod n)ˣ)]
 
 /--
 Normalized orthogonality for Dirichlet characters (indicator form).
