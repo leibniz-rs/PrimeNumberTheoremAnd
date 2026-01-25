@@ -1,4 +1,5 @@
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+import Mathlib.LinearAlgebra.Matrix.Block
 import Mathlib.RingTheory.PowerSeries.Inverse
 import PrimeNumberTheoremAnd.ArtinLikeLSeries
 
@@ -86,6 +87,91 @@ lemma eulerPoly_constantCoeff (A : Matrix n n ℂ) :
   simp [eulerCoeff, eulerFactor, eulerPoly_constantCoeff (n := n) A]
 
 end EulerFactor
+
+section Block
+
+variable {m n : Type*} [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n]
+
+open scoped BigOperators
+
+/-!
+### Block-diagonal multiplicativity
+
+These are the core algebraic lemmas needed later to relate Artin Euler factors to direct sums of
+representations (block diagonal matrices).
+-/
+
+lemma eulerPoly_fromBlocks (A : Matrix m m ℂ) (D : Matrix n n ℂ) :
+    eulerPoly (n := (m ⊕ n)) (Matrix.fromBlocks A 0 0 D)
+      =
+    eulerPoly (n := m) A * eulerPoly (n := n) D := by
+  classical
+  -- Work with the coefficient embedding `ℂ →+* ℂ⟦X⟧`.
+  let c : ℂ →+* ℂ⟦X⟧ := (PowerSeries.C : ℂ →+* ℂ⟦X⟧)
+  -- Abbreviate the block matrices appearing inside the determinant.
+  let MA : Matrix m m ℂ⟦X⟧ :=
+    (1 : Matrix m m ℂ⟦X⟧) - (PowerSeries.X : ℂ⟦X⟧) • A.map (⇑c)
+  let MD : Matrix n n ℂ⟦X⟧ :=
+    (1 : Matrix n n ℂ⟦X⟧) - (PowerSeries.X : ℂ⟦X⟧) • D.map (⇑c)
+  have hblock :
+      ((1 : Matrix (m ⊕ n) (m ⊕ n) ℂ⟦X⟧) -
+            (PowerSeries.X : ℂ⟦X⟧) •
+              (Matrix.fromBlocks A 0 0 D).map (⇑c))
+        =
+      Matrix.fromBlocks MA 0 0 MD := by
+    ext i j
+    cases i with
+    | inl i =>
+        cases j with
+        | inl j =>
+            by_cases h : i = j <;>
+              simp [MA, MD, h, Matrix.fromBlocks_apply₁₁, Matrix.map_apply]
+        | inr j =>
+            simp [MA, MD, Matrix.fromBlocks_apply₁₂, Matrix.map_apply]
+    | inr i =>
+        cases j with
+        | inl j =>
+            simp [MA, MD, Matrix.fromBlocks_apply₂₁, Matrix.map_apply]
+        | inr j =>
+            by_cases h : i = j <;>
+              simp [MA, MD, h, Matrix.fromBlocks_apply₂₂, Matrix.map_apply]
+  -- Now compute the determinant using the block-triangular determinant lemma.
+  -- The only subtlety is that `eulerPoly` uses `RingHom.mapMatrix`; we rewrite it to `Matrix.map`.
+  simp [eulerPoly, hblock, MA, MD, c, RingHom.mapMatrix_apply]
+
+lemma eulerFactor_fromBlocks (A : Matrix m m ℂ) (D : Matrix n n ℂ) :
+    eulerFactor (n := (m ⊕ n)) (Matrix.fromBlocks A 0 0 D)
+      =
+    eulerFactor (n := m) A * eulerFactor (n := n) D := by
+  classical
+  set φ : ℂ⟦X⟧ := eulerPoly (n := (m ⊕ n)) (Matrix.fromBlocks A 0 0 D)
+  set b : ℂ⟦X⟧ := eulerFactor (n := (m ⊕ n)) (Matrix.fromBlocks A 0 0 D)
+  set c : ℂ⟦X⟧ := eulerFactor (n := m) A * eulerFactor (n := n) D
+  have hb : φ * b = 1 := by
+    -- `eulerFactor` is defined as `invOfUnit`, and `eulerPoly` has unit constant coefficient.
+    simp [φ, b, eulerFactor, eulerPoly_constantCoeff]
+  have hb' : b * φ = 1 := by
+    simpa [mul_comm, φ, b] using hb
+  have hc : φ * c = 1 := by
+    -- Use multiplicativity of `eulerPoly` on block diagonals, then the defining inverse identities.
+    simp [φ, c, eulerPoly_fromBlocks (A := A) (D := D), eulerFactor, eulerPoly_constantCoeff,
+      mul_assoc, mul_left_comm, mul_comm]
+  calc
+    b = b * 1 := by simp
+    _ = b * (φ * c) := by simp [hc]
+    _ = (b * φ) * c := by simp [mul_assoc]
+    _ = 1 * c := by simp [hb']
+    _ = c := by simp
+
+lemma eulerCoeff_fromBlocks (A : Matrix m m ℂ) (D : Matrix n n ℂ) (e : ℕ) :
+    eulerCoeff (n := (m ⊕ n)) (Matrix.fromBlocks A 0 0 D) e
+      =
+    ∑ p ∈ Finset.antidiagonal e,
+      eulerCoeff (n := m) A p.1 * eulerCoeff (n := n) D p.2 := by
+  classical
+  simp [eulerCoeff, eulerFactor_fromBlocks (A := A) (D := D), PowerSeries.coeff_mul]
+
+end Block
 
 section Assemble
 
