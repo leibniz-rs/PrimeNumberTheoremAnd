@@ -32,7 +32,7 @@ lemma nat_card_int_quot_span_prime (p : ℕ) [Fact (Nat.Prime p)] :
   haveI : NeZero p := ⟨(Fact.out : Nat.Prime p).ne_zero⟩
   -- Compute `Nat.card (ZMod p)`.
   have hz : Nat.card (ZMod p) = p := by
-    simpa [Nat.card_eq_fintype_card] using (ZMod.card p)
+    simp [Nat.card_eq_fintype_card]
   -- Transport cardinality along the ring equivalence.
   simpa using (Nat.card_congr e.toEquiv).trans hz
 
