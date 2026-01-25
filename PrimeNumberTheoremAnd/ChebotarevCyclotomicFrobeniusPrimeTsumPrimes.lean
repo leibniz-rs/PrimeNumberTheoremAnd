@@ -39,11 +39,9 @@ theorem series_frobPrimeSet_eq_tsum_primes_character {s : ℝ} (σ : Gal(L/ℚ))
   -- Start from the general prime-indexed expansion.
   have h := (PrimeNumberTheoremAnd.DirichletDensity.series_eq_tsum_primes
     (S := frobPrimeSet (n := n) (L := L) σ) hs)
-  -- Rewrite each term at a prime using `coeff_frobPrimeSet_eq_prime`.
   refine h.trans ?_
   refine tsum_congr (fun p ↦ ?_)
   have hp : (p.1).Prime := p.2
-  -- Expand `term` at a prime and substitute the coefficient formula.
   have hn0 : (p.1 : ℕ) ≠ 0 := p.2.ne_zero
   simp [LSeries.term, hn0, coeff_frobPrimeSet_eq_prime (n := n) (L := L) (σ := σ) hp, div_eq_mul_inv,
     mul_comm]
