@@ -34,21 +34,12 @@ theorem localCoeffsOfConj_sum :
       (ArtinRep.localCoeffsOfConj (ρ := ρ₁) c)
       (ArtinRep.localCoeffsOfConj (ρ := ρ₂) c) := by
   classical
-  -- Two `LocalCoeffs` are equal if their `a` agree (and `a_zero` is proof-irrelevant).
+  -- Two `LocalCoeffs` are equal if their `a` agree.
   ext p e
-  -- Reduce to the coefficient identity for products of Euler factors.
-  cases e with
-  | zero =>
-      simp [PrimeNumberTheoremAnd.ArtinLike.LocalCoeffs.mul, ArtinRep.localCoeffsOfConj]
-  | succ e =>
-      -- For `e > 0`, both sides are computed by the Cauchy product over `antidiagonal`.
-      -- We use the `eulerCoeffClass` definition and the coefficient formula from `ArtinRep.sum`.
-      refine Quotient.inductionOn (c p) (fun g => ?_) <;> clear g
-      intro g
-      -- Unfold both sides down to `eulerCoeffAt`, then apply `eulerCoeffAt_sum`.
-      simp [PrimeNumberTheoremAnd.ArtinLike.LocalCoeffs.mul, ArtinRep.localCoeffsOfConj,
-        ArtinRep.eulerCoeffClass, ArtinRep.eulerCoeffAt, ArtinRep.eulerFactorAt,
-        ArtinRep.eulerCoeffAt_sum (ρ₁ := ρ₁) (ρ₂ := ρ₂) (g := g) (e := e.succ)]
+  simp only [PrimeNumberTheoremAnd.ArtinLike.LocalCoeffs.mul, ArtinRep.localCoeffsOfConj]
+  refine Quotient.inductionOn (c p) (fun g => ?_)
+  simpa [ArtinRep.eulerCoeffClass, ArtinRep.eulerCoeffAt, ArtinRep.eulerFactorAt, ArtinLSeries.eulerCoeff] using
+    (ArtinLSeries.eulerCoeff_fromBlocks (m := ρ₁.n) (n := ρ₂.n) (A := ρ₁.mat g) (D := ρ₂.mat g) e)
 
 end ArtinRep
 
