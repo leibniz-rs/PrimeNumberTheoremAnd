@@ -15,7 +15,7 @@ namespace PrimeNumberTheoremAnd
 
 namespace Chebotarev
 
-namespace Ideal
+namespace DegreeOne
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
@@ -29,10 +29,12 @@ def IsDegreeOneOver (p : Ideal R) (P : Ideal S) : Prop :=
 lemma isDegreeOneOver_iff_finrank
     (p : Ideal R) (P : Ideal S) [P.LiesOver p] [p.IsMaximal] :
     IsDegreeOneOver (p := p) P ↔ Module.finrank (R ⧸ p) (S ⧸ P) = 1 := by
-  simp [IsDegreeOneOver, Ideal.inertiaDeg_algebraMap (p := p) (P := P)]
+  -- Use the standard inertia-degree formula under the `LiesOver` hypothesis.
+  simpa [IsDegreeOneOver] using congrArg (fun n : ℕ => n = 1) (_root_.Ideal.inertiaDeg_algebraMap (p := p) (P := P))
 
-end Ideal
+end DegreeOne
 
 end Chebotarev
 
 end PrimeNumberTheoremAnd
+
