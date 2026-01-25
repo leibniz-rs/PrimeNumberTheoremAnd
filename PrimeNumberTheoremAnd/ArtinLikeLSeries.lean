@@ -3,6 +3,7 @@ import Mathlib.NumberTheory.LSeries.Convolution
 import Mathlib.NumberTheory.EulerProduct.Basic
 import Mathlib.Algebra.BigOperators.Finsupp.Basic
 import Mathlib.Data.Nat.Factorization.Basic
+import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.NumberTheory.Divisors
 
 /-!

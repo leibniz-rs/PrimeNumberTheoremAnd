@@ -7,6 +7,8 @@ import PrimeNumberTheoremAnd.ArtinRepresentation
 import PrimeNumberTheoremAnd.ArtinCharacter
 import PrimeNumberTheoremAnd.ArtinLSeriesLocalCoeffs
 import PrimeNumberTheoremAnd.ArtinLSeriesNat
+import PrimeNumberTheoremAnd.ArtinLSeriesNatPrimePowSum
+import PrimeNumberTheoremAnd.ArtinLSeriesNatConvolutionSum
 
 -- Direct sums (block diagonal)
 import PrimeNumberTheoremAnd.ArtinRepresentationSum

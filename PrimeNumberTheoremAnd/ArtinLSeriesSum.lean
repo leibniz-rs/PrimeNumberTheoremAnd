@@ -2,6 +2,7 @@ import Mathlib
 
 import PrimeNumberTheoremAnd.ArtinRepresentationSum
 import PrimeNumberTheoremAnd.ArtinLSeriesLocalCoeffsSum
+import PrimeNumberTheoremAnd.ArtinLSeriesNatConvolutionSum
 
 /-!
 ## Artin L-series: direct sums (algebraic layer)
