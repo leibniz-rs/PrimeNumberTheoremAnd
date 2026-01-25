@@ -1,6 +1,9 @@
 import Mathlib.NumberTheory.LSeries.Basic
+import Mathlib.NumberTheory.LSeries.Convolution
 import Mathlib.NumberTheory.EulerProduct.Basic
+import Mathlib.Algebra.BigOperators.Finsupp.Basic
 import Mathlib.Data.Nat.Factorization.Basic
+import Mathlib.NumberTheory.Divisors
 
 /-!
 ## “Artin-like” L-series from local Euler factors (foundational)
@@ -93,6 +96,20 @@ lemma coeff_mul_of_coprime (A : LocalCoeffs) {m n : ℕ} (hm : m ≠ 0) (hn : n 
   simp [coeff_eq_prod_factorization A (mul_ne_zero hm hn), coeff_eq_prod_factorization A hm,
     coeff_eq_prod_factorization A hn, Nat.factorization_mul_of_coprime hcop,
     Finsupp.prod_add_index_of_disjoint hdis]
+
+lemma coeff_prime_pow (A : LocalCoeffs) {p k : ℕ} (hp : p.Prime) :
+    A.coeff (p ^ k) = A.a ⟨p, hp⟩ k := by
+  classical
+  have hn : p ^ k ≠ 0 := pow_ne_zero k hp.ne_zero
+  -- Expand using `factorization` and use `factorization_pow` for primes.
+  rw [coeff_eq_prod_factorization (A := A) hn, hp.factorization_pow]
+  -- Evaluate the product over the single support point.
+  let h : ℕ → ℕ → ℂ := fun q e => if hq : q.Prime then A.a ⟨q, hq⟩ e else 1
+  have h0 : h p 0 = 1 := by
+    simp [h, A.a_zero, hp]
+  have hs : (Finsupp.single p k).prod h = h p k :=
+    Finsupp.prod_single_index (a := p) (b := k) (h := h) h0
+  simpa [h, hp] using hs
 
 /-! ### Multiplying local Euler factors -/
 
@@ -187,4 +204,3 @@ end EulerProduct
 end ArtinLike
 
 end PrimeNumberTheoremAnd
-

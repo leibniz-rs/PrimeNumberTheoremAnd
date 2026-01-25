@@ -90,6 +90,28 @@ noncomputable def sum : ArtinRep G where
   simpa [ArtinRep.eulerCoeffAt, ArtinRep.eulerFactorAt, sum_mat] using
     (ArtinLSeries.eulerCoeff_fromBlocks (m := ρ₁.n) (n := ρ₂.n) (A := ρ₁.mat g) (D := ρ₂.mat g) e)
 
+@[simp] lemma eulerPolyClass_sum (C : ConjClasses G) :
+    (sum (ρ₁ := ρ₁) (ρ₂ := ρ₂)).eulerPolyClass C = ρ₁.eulerPolyClass C * ρ₂.eulerPolyClass C := by
+  classical
+  refine Quotient.inductionOn C (fun g => ?_)
+  simp [ArtinRep.eulerPolyClass]
+
+@[simp] lemma eulerFactorClass_sum (C : ConjClasses G) :
+    (sum (ρ₁ := ρ₁) (ρ₂ := ρ₂)).eulerFactorClass C =
+      ρ₁.eulerFactorClass C * ρ₂.eulerFactorClass C := by
+  classical
+  refine Quotient.inductionOn C (fun g => ?_)
+  simp [ArtinRep.eulerFactorClass]
+
+@[simp] lemma eulerCoeffClass_sum (e : ℕ) (C : ConjClasses G) :
+    (sum (ρ₁ := ρ₁) (ρ₂ := ρ₂)).eulerCoeffClass e C
+      =
+    ∑ p ∈ Finset.antidiagonal e,
+      ρ₁.eulerCoeffClass p.1 C * ρ₂.eulerCoeffClass p.2 C := by
+  classical
+  refine Quotient.inductionOn C (fun g => ?_)
+  simp [ArtinRep.eulerCoeffClass]
+
 end
 
 end ArtinRep
