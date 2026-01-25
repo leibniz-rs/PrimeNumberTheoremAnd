@@ -44,6 +44,19 @@ structure LocalCoeffs where
 
 namespace LocalCoeffs
 
+@[ext] lemma ext {A B : LocalCoeffs} (h : ∀ p e, A.a p e = B.a p e) : A = B := by
+  cases A with
+  | mk a a_zero =>
+    cases B with
+    | mk b b_zero =>
+      have hab : a = b := funext (fun p => funext (fun e => h p e))
+      cases hab
+      have hpr : a_zero = b_zero := by
+        funext p
+        apply Subsingleton.elim
+      cases hpr
+      rfl
+
 /--
 The induced global arithmetic function `coeff` built from the prime factorization:
 
@@ -80,6 +93,21 @@ lemma coeff_mul_of_coprime (A : LocalCoeffs) {m n : ℕ} (hm : m ≠ 0) (hn : n 
   simp [coeff_eq_prod_factorization A (mul_ne_zero hm hn), coeff_eq_prod_factorization A hm,
     coeff_eq_prod_factorization A hn, Nat.factorization_mul_of_coprime hcop,
     Finsupp.prod_add_index_of_disjoint hdis]
+
+/-! ### Multiplying local Euler factors -/
+
+/--
+Pointwise multiplication of local Euler factors.
+
+If `A` and `B` are local coefficient systems (encoding the power-series
+\(\sum_{e\ge 0} a_p(e) X^e\)), then `A.mul B` encodes the coefficient system for the product of
+these power series, i.e. the Cauchy product on each prime `p`.
+-/
+noncomputable def mul (A B : LocalCoeffs) : LocalCoeffs where
+  a p e := ∑ x ∈ Finset.antidiagonal e, A.a p x.1 * B.a p x.2
+  a_zero p := by
+    classical
+    simp [Finset.antidiagonal_zero, A.a_zero, B.a_zero]
 
 end LocalCoeffs
 

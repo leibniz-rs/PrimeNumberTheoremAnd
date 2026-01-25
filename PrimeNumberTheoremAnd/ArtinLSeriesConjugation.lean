@@ -44,9 +44,9 @@ lemma mapMatrix_inv_of_isUnit (f : R →+* S) (M : Matrix n n R) (hM : IsUnit M)
   let Fu : (Matrix n n S)ˣ := Units.map (RingHom.toMonoidHom F) u
   have hinvR : ((↑u : Matrix n n R)⁻¹) = (↑(u⁻¹) : Matrix n n R) := by
     -- `Matrix.coe_units_inv` is `↑u⁻¹ = (↑u)⁻¹`.
-    simpa using (Matrix.coe_units_inv u).symm
+    simp
   have hinvS : ((↑Fu : Matrix n n S)⁻¹) = (↑(Fu⁻¹) : Matrix n n S) := by
-    simpa using (Matrix.coe_units_inv Fu).symm
+    simp
   -- Now both sides reduce to `↑(Fu⁻¹)`.
   calc
     F ((↑u : Matrix n n R)⁻¹)
@@ -54,7 +54,7 @@ lemma mapMatrix_inv_of_isUnit (f : R →+* S) (M : Matrix n n R) (hM : IsUnit M)
     _ = (↑(Units.map (RingHom.toMonoidHom F) (u⁻¹)) : Matrix n n S) := rfl
     _ = (↑(Fu⁻¹) : Matrix n n S) := by
           -- `Units.map` preserves inverses.
-          simpa [Fu] using congrArg (fun x => (↑x : Matrix n n S)) (Units.map_inv (RingHom.toMonoidHom F) u)
+          simp [Fu]
     _ = (↑Fu : Matrix n n S)⁻¹ := by simp_rw [hinvS]
     _ = (F (↑u : Matrix n n R))⁻¹ := by rfl
 

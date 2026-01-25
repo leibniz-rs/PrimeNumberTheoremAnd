@@ -62,13 +62,13 @@ lemma eulerPolyAt_eq_of_isConj {g h : G} (hg : IsConj g h) :
     simp [mul_assoc] at this
     simpa [mul_assoc] using this
   have hunit : IsUnit (ρ.mat (↑c : G)) := by
-    simpa [ArtinRep.mat] using (ρ.ρ (↑c : G)).isUnit
+    simp [ArtinRep.mat]
   -- Rewrite `h` as a conjugate and use the matrix-level lemma `eulerPoly_conj`.
   -- The homomorphism property gives `ρ(h) = ρ(c) ρ(g) ρ(c)⁻¹` inside the matrix ring.
   have hmat :
       ρ.mat h = ρ.mat (↑c : G) * ρ.mat g * (ρ.mat (↑c : G))⁻¹ := by
     calc
-      ρ.mat h = ρ.mat ((↑c : G) * g * (↑c : G)⁻¹) := by simpa [hconj]
+      ρ.mat h = ρ.mat ((↑c : G) * g * (↑c : G)⁻¹) := by simp [hconj]
       _ = ρ.mat (↑c : G) * ρ.mat g * (ρ.mat (↑c : G))⁻¹ := by
             simp [ArtinRep.mat, map_mul, mul_assoc]
   -- `eulerPoly` only depends on the matrix up to conjugation.
