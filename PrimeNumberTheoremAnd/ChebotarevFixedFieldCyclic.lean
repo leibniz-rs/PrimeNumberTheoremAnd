@@ -35,6 +35,13 @@ def fixedFieldZpowers : IntermediateField K L :=
 
 variable [FiniteDimensional K L]
 
+/-- Galois correspondence: the fixing subgroup of `L^{⟨σ⟩}` is exactly `⟨σ⟩`. -/
+@[simp] lemma fixingSubgroup_fixedFieldZpowers :
+    (fixedFieldZpowers (K := K) (L := L) σ).fixingSubgroup = Subgroup.zpowers σ := by
+  -- This holds in any finite-dimensional extension (no Galois assumption needed).
+  simpa [fixedFieldZpowers] using
+    (IntermediateField.fixingSubgroup_fixedField (F := K) (E := L) (H := Subgroup.zpowers σ))
+
 /--
 The Galois group of `L` over the fixed field of `⟨σ⟩` is cyclic.
 

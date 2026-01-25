@@ -30,7 +30,7 @@ lemma isDegreeOneOver_iff_finrank
     (p : Ideal R) (P : Ideal S) [P.LiesOver p] [p.IsMaximal] :
     IsDegreeOneOver (p := p) P ↔ Module.finrank (R ⧸ p) (S ⧸ P) = 1 := by
   -- Use the standard inertia-degree formula under the `LiesOver` hypothesis.
-  simpa [IsDegreeOneOver] using congrArg (fun n : ℕ => n = 1) (_root_.Ideal.inertiaDeg_algebraMap (p := p) (P := P))
+  simp [IsDegreeOneOver]
 
 end DegreeOne
 

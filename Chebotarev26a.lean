@@ -20,6 +20,8 @@ import PrimeNumberTheoremAnd.ChebotarevArtinLSeries
 import PrimeNumberTheoremAnd.ChebotarevConjugacyCounting
 import PrimeNumberTheoremAnd.ArtinCharacter
 import PrimeNumberTheoremAnd.ChebotarevFixedFieldCyclic
+import PrimeNumberTheoremAnd.ChebotarevFixedFieldGenerator
+import PrimeNumberTheoremAnd.ChebotarevDegreeOne
 import PrimeNumberTheoremAnd.ChebotarevCyclotomicPower
 import PrimeNumberTheoremAnd.ChebotarevCyclotomicAbelian
 import PrimeNumberTheoremAnd.ChebotarevFrobeniusRootsOfUnity
@@ -178,7 +180,30 @@ theorem isCyclic_gal_fixedFieldZpowers (σ : Gal(L/K)) :
   simpa using
     (PrimeNumberTheoremAnd.Chebotarev.isCyclic_gal_fixedFieldZpowers (K := K) (L := L) σ)
 
+@[simp] theorem fixingSubgroup_fixedFieldZpowers (σ : Gal(L/K)) :
+    (PrimeNumberTheoremAnd.Chebotarev.fixedFieldZpowers (K := K) (L := L) σ).fixingSubgroup =
+      Subgroup.zpowers σ := by
+  simpa using
+    (PrimeNumberTheoremAnd.Chebotarev.fixingSubgroup_fixedFieldZpowers (K := K) (L := L) σ)
+
+/-! A canonical element of `Gal(L/L^{⟨σ⟩})` corresponding to `σ`. -/
+noncomputable abbrev sigmaGal_fixedFieldZpowers (σ : Gal(L/K)) :
+    Gal(L / PrimeNumberTheoremAnd.Chebotarev.fixedFieldZpowers (K := K) (L := L) σ) :=
+  PrimeNumberTheoremAnd.Chebotarev.sigmaGalFixedFieldZpowers (K := K) (L := L) σ
+
 end FixedFieldCyclic
+
+/-! ### 4.6. Degree-one primes (Sharifi Step 2 setup) -/
+
+section DegreeOne
+
+variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+
+/-- “Degree 1 over `p`” packaged as inertia degree `= 1`. -/
+abbrev Ideal.IsDegreeOneOver (p : Ideal R) (P : Ideal S) : Prop :=
+  PrimeNumberTheoremAnd.Chebotarev.DegreeOne.IsDegreeOneOver (p := p) P
+
+end DegreeOne
 
 /-!
 ### 4. Frobenius elements and classes
