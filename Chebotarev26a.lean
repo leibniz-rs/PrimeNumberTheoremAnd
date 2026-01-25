@@ -44,7 +44,7 @@ import PrimeNumberTheoremAnd.ChebotarevCyclotomicFrobeniusMainTerm
 import PrimeNumberTheoremAnd.ChebotarevCyclotomicFrobeniusInfinite
 import PrimeNumberTheoremAnd.ChebotarevFinitePrimeCorrection
 import PrimeNumberTheoremAnd.ChebotarevCyclotomicFiniteCorrectionBound
-import PrimeNumberTheoremAnd.ChebotarevCyclotomicFrobeniusDensityConditional
+import PrimeNumberTheoremAnd.ChebotarevCyclotomicFrobeniusDensity
 
 /-!
 ## Chebotarev density theorem (work in progress)
